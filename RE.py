@@ -18,31 +18,82 @@ class RE:
     def concatenate(self, str1, str2):
         return str1 + str2
     def main(self, regex):
-        special = ['(', ')', '*', '+']
-        strArr = ['', '']
-        strArrCtr = 0
-        tmpStr = '' 
+        temp = ''
         finalString = ''
+        special = [')', '*']
+        operators = ['+', '*']
+        isPlus = False
+        stringStack = []
         for i in range(len(regex)):
-            if regex[i] == '+':
-                if strArrCtr == 0:
-                    strArrCtr = 1
-                elif strArrCtr == 1:
-                    strArrCtr = 0
-            elif regex[i] == '*':
-                if regex[i - 1] != ')':
-                    strArr[strArrCtr] = strArr[strArrCtr][:-1] + self.star(strArr[strArrCtr][-1])
-                    finalString += strArr[strArrCtr]
-                else:
-                    strArr[strArrCtr] = self.star(strArr[strArrCtr])
-            elif regex[i] == '(' or regex[i] == ')':
-                pass
+            # Version 1
+            # print(stringStack)
+            # if regex[i] == '(' or regex[i] == '+':
+            #     stringStack.append(temp)
+            # elif regex[i] == ')' or i == len(regex) - 1:
+            #     if regex[i] not in special and i == len(regex) - 1:
+            #         temp += regex[i]
+            #     if stringStack:
+            #         temp = stringStack.pop()
+            #     finalString += temp
+            # elif regex[i] == '*':
+            #     if regex[i - 1] == ')':
+            #         temp = self.star(temp)
+            #     else:
+            #         temp = temp[:-1] + self.star(temp[-1])
+            # else:
+            #     temp += regex[i]
+            #     if stringStack:
+            #         stringStack[-1] = temp
+
+            # Version 2
+            # if regex[i] not in operators:
+            #     if regex[i] == '(':
+            #         stringStack.append(temp)
+            #     elif regex[i] == ')' or i == len(regex) - 1:
+            #         if stringStack:
+            #             temp = stringStack.pop()
+            #         if regex[i] != ')' or i == len(regex) - 1:
+            #             temp += regex[i]
+            #         finalString += temp
+            #     else:
+            #         temp += regex[i]
+            # else:
+            #     print(temp)
+            #     if regex[i] == '*':
+            #         if regex[i - 1] == ')':
+            #             # print(regex[i - 1], temp)
+            #             temp = self.star(temp)
+            #         else:
+            #             temp = temp[:-1] + self.star(temp[-1])
+            #         if i == len(regex) - 1:
+            #             finalString += temp
+
+            # Version 3
+            special = ['(', ')', '+', '*']
+            popped = ''
+            if regex[i] not in special:
+                temp += regex[i]
             else:
-                strArr[strArrCtr] += regex[i]
+                if regex[i] == '(':
+                    stringStack.append(temp)
+                elif regex[i] == ')':
+                    if stringStack:
+                        popped = stringStack.pop()
+                    finalString += temp
+                elif regex[i] == '*':
+                    if regex[i - 1] == ')':
+                        popped = self.star(temp)
+                        temp = popped
+                    else:
+                        temp = temp[:-1] + self.star(temp[-1])
+                    if i == len(regex) - 1:
+                        finalString += temp
+
         return finalString
 #Driver
 newString = RE()
-print(newString.main("(aab)*ccdd*"))
+# print(newString.main("(aab)*c*"))
+print(newString.main("((aab)*c)*"))
 # print(regex.star("a"))
 # print(regex.plus("a", "b"))
 # print(regex.concatenate(str(regex.plus("y", "x")), str(regex.star("b"))))
