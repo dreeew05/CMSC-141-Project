@@ -20,60 +20,81 @@ class RE:
     def main(self, regex):
         temp = ''
         finalString = ''
-        special = ['(', ')', '+', '*']
-        isPlus = False
+        operations = ['(', ')', '*', '+']
         stringStack = []
+        opStack = []
+
         for i in range(len(regex)):
-            if regex[i] not in special:
+            if regex[i] not in operations:
                 temp = self.concatenate(temp, regex[i])
-                print("Stack:", stringStack, "Temp: ", temp, "i:", i)
+                print("stack: ", stringStack, "temp: ", temp, "opStack: ", opStack, 'val:', regex[i])
             else:
                 if regex[i] == '(':
                     stringStack.append(temp)
+                    opStack.append(regex[i])
                     temp = ''
                 elif regex[i] == ')':
-                    # popped = stringStack.pop(-1)
-                    # if isPlus:
-                    #     # Choose between popped and temp
-                    #     # Then, store to popped
-                    #     popped = self.plus(popped, temp)
-                    #     temp = popped
-                    #     isPlus = False
                     popped = stringStack.pop()
-                    if regex[i - 1] == ')':
-                        temp = popped + temp
-                    if isPlus:
+                    currOp = opStack.pop()
+                    if currOp == '(':
+                        temp = self.concatenate(popped, temp)
+                    elif currOp == '+':
                         popped = self.plus(popped, temp)
                         temp = popped
-                        isPlus = False
                 elif regex[i] == '*':
                     if regex[i - 1] == ')':
                         temp = self.star(temp)
                     else:
                         temp = temp[:-1] + self.star(temp[-1])
-                    if i == len(regex) - 1:
+                    if i == len(regex) - 1 and not opStack:
                         finalString = self.concatenate(finalString, temp)
                 elif regex[i] == '+':
-                    if not isPlus:
-                        stringStack.append(temp)
-                        temp = ''
-                        isPlus = True
-                        
+                    opStack.append(regex[i])
+                    stringStack.append(temp)
+                    temp = ''
+                
             if i == len(regex) - 1:
-                # print("Stack: ", stringStack)
-                if isPlus:
-                    popped = stringStack.pop(-1)
-                    popped = self.plus(popped, temp)
-                # print("f:", finalString, "p:", popped)
-                finalString += popped
-                while stringStack:
-                    popped = stringStack.pop(-1)
-                    finalString = popped + finalString
-                    
+                print("---FINAL---")
+                print("opstack:", opStack, "strStack:", stringStack, "temp:", temp, "finalString:", finalString)
+                # if len(stringStack) > 0 and stringStack[0] != '' and opStack:
+                #     while stringStack:
+                #         popped = stringStack.pop()
+                #         if opStack:
+                #             currOp = opStack.pop()
+                #             # print(currOp)
+                #             if currOp == '+':
+                #                 popped = self.plus(popped, temp)
+                #                 print("popped:", popped)
+                #                 # finalString = popped 
+                #                 temp = popped + temp
+                #             elif currOp == '(':
+                #                 finalString = temp + finalString
+                #         # finalString = popped + finalString
+                # # else:
+                # #     finalString = temp + finalString
+
+                if opStack:
+                    if stringStack[-1] != '':
+                        while stringStack:
+                            popped = stringStack.pop()
+                            if opStack:
+                                currOp = opStack.pop()
+                                if currOp == '+':
+                                    popped = self.plus(popped, temp)
+                                    # print("pop:", popped)
+                                finalString = popped + finalString
+                    else:
+                        finalString = temp + finalString
+                            
         return finalString
 #Driver
 newString = RE()
+# EASY
 # print(newString.main("(aab)*c*"))
-# print(newString.main("aa*(b+c)+d"))
-print(newString.main("(aa*(b+c))*+d"))
+# print(newString.main("a+(bc)*"))
+# print(newString.main("(a+b)"))                  
 # print(newString.main("a+b"))
+
+# HARD
+# print(newString.main("aa*(b+c)*+d"))
+print(newString.main("((aa*(b+c))*+d)+(x)"))
