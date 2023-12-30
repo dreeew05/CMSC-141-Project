@@ -22,10 +22,9 @@ class RE:
         finalString = ''
         special = ['(', ')', '+', '*']
         isPlus = False
-        popped = ''
         stringStack = []
         for i in range(len(regex)):
-            # print(stringStack, temp)
+            print("Stack:", stringStack, "Temp: ", temp, "i:", i)
             if regex[i] not in special:
                 temp = self.concatenate(temp, regex[i])
             else:
@@ -34,6 +33,12 @@ class RE:
                     temp = ''
                 elif regex[i] == ')':
                     popped = stringStack.pop()
+                    if isPlus:
+                        # Choose between popped and temp
+                        # Then, store to popped
+                        popped = self.plus(popped, temp)
+                        temp = popped
+                        isPlus = False
                     finalString = popped + finalString
                 elif regex[i] == '*':
                     if regex[i - 1] == ')':
@@ -43,23 +48,21 @@ class RE:
                     if i == len(regex) - 1:
                         finalString = self.concatenate(finalString, temp)
                 elif regex[i] == '+':
-                    # BUGGY
-                    # if not isPlus:
-                    #     str1 = temp
-                    #     temp = '' 
-                    #     isPlus = True
-                    # else:
-                    #     str2 = ''
-                    #     temp = ''
-                    #     isPlus = False
-                    # if i == len(regex) - 1:
-                    #     finalString += self.plus(str1, str2)
-                    pass
+                    if not isPlus:
+                        stringStack.append(temp)
+                        temp = ''
+                        isPlus = True
+
+            if i == len(regex) - 1:
+                if stringStack or isPlus:
+                    popped = stringStack.pop()
+                    if isPlus:
+                        popped = self.plus(popped, temp)
+                finalString = popped + finalString
+
         return finalString
 #Driver
 newString = RE()
 # print(newString.main("(aab)*c*"))
-print(newString.main("aa*(bc)*"))
-# print(regex.star("a"))
-# print(regex.plus("a", "b"))
-# print(regex.concatenate(str(regex.plus("y", "x")), str(regex.star("b"))))
+print(newString.main("aa*(b+c)*"))
+# print(newString.main("a+b"))
