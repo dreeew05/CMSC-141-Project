@@ -24,22 +24,28 @@ class RE:
         isPlus = False
         stringStack = []
         for i in range(len(regex)):
-            print("Stack:", stringStack, "Temp: ", temp, "i:", i)
             if regex[i] not in special:
                 temp = self.concatenate(temp, regex[i])
+                print("Stack:", stringStack, "Temp: ", temp, "i:", i)
             else:
                 if regex[i] == '(':
                     stringStack.append(temp)
                     temp = ''
                 elif regex[i] == ')':
+                    # popped = stringStack.pop(-1)
+                    # if isPlus:
+                    #     # Choose between popped and temp
+                    #     # Then, store to popped
+                    #     popped = self.plus(popped, temp)
+                    #     temp = popped
+                    #     isPlus = False
                     popped = stringStack.pop()
+                    if regex[i - 1] == ')':
+                        temp = popped + temp
                     if isPlus:
-                        # Choose between popped and temp
-                        # Then, store to popped
                         popped = self.plus(popped, temp)
                         temp = popped
                         isPlus = False
-                    finalString = popped + finalString
                 elif regex[i] == '*':
                     if regex[i - 1] == ')':
                         temp = self.star(temp)
@@ -52,17 +58,22 @@ class RE:
                         stringStack.append(temp)
                         temp = ''
                         isPlus = True
-
+                        
             if i == len(regex) - 1:
-                if stringStack or isPlus:
-                    popped = stringStack.pop()
-                    if isPlus:
-                        popped = self.plus(popped, temp)
-                finalString = popped + finalString
-
+                # print("Stack: ", stringStack)
+                if isPlus:
+                    popped = stringStack.pop(-1)
+                    popped = self.plus(popped, temp)
+                # print("f:", finalString, "p:", popped)
+                finalString += popped
+                while stringStack:
+                    popped = stringStack.pop(-1)
+                    finalString = popped + finalString
+                    
         return finalString
 #Driver
 newString = RE()
 # print(newString.main("(aab)*c*"))
-print(newString.main("aa*(b+c)*"))
+# print(newString.main("aa*(b+c)+d"))
+print(newString.main("(aa*(b+c))*+d"))
 # print(newString.main("a+b"))
