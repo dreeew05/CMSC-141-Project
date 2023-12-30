@@ -27,7 +27,7 @@ class RE:
         for i in range(len(regex)):
             if regex[i] not in operations:
                 temp = self.concatenate(temp, regex[i])
-                print("stack: ", stringStack, "temp: ", temp, "opStack: ", opStack, 'val:', regex[i])
+                # print("stack: ", stringStack, "temp: ", temp, "opStack: ", opStack, 'val:', regex[i])
             else:
                 if regex[i] == '(':
                     stringStack.append(temp)
@@ -54,25 +54,6 @@ class RE:
                     temp = ''
                 
             if i == len(regex) - 1:
-                print("---FINAL---")
-                print("opstack:", opStack, "strStack:", stringStack, "temp:", temp, "finalString:", finalString)
-                # if len(stringStack) > 0 and stringStack[0] != '' and opStack:
-                #     while stringStack:
-                #         popped = stringStack.pop()
-                #         if opStack:
-                #             currOp = opStack.pop()
-                #             # print(currOp)
-                #             if currOp == '+':
-                #                 popped = self.plus(popped, temp)
-                #                 print("popped:", popped)
-                #                 # finalString = popped 
-                #                 temp = popped + temp
-                #             elif currOp == '(':
-                #                 finalString = temp + finalString
-                #         # finalString = popped + finalString
-                # # else:
-                # #     finalString = temp + finalString
-
                 if opStack:
                     if stringStack[-1] != '':
                         while stringStack:
@@ -81,10 +62,9 @@ class RE:
                                 currOp = opStack.pop()
                                 if currOp == '+':
                                     popped = self.plus(popped, temp)
-                                    # print("pop:", popped)
-                                finalString = popped + finalString
+                                finalString = self.concatenate(popped, finalString)
                     else:
-                        finalString = temp + finalString
+                        finalString = self.concatenate(temp, finalString)
                             
         return finalString
 #Driver
@@ -94,6 +74,7 @@ newString = RE()
 # print(newString.main("a+(bc)*"))
 # print(newString.main("(a+b)"))                  
 # print(newString.main("a+b"))
+# print(newString.main("(0*1*)*"))
 
 # HARD
 # print(newString.main("aa*(b+c)*+d"))
