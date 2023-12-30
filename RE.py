@@ -20,80 +20,46 @@ class RE:
     def main(self, regex):
         temp = ''
         finalString = ''
-        special = [')', '*']
-        operators = ['+', '*']
+        special = ['(', ')', '+', '*']
         isPlus = False
+        popped = ''
         stringStack = []
         for i in range(len(regex)):
-            # Version 1
-            # print(stringStack)
-            # if regex[i] == '(' or regex[i] == '+':
-            #     stringStack.append(temp)
-            # elif regex[i] == ')' or i == len(regex) - 1:
-            #     if regex[i] not in special and i == len(regex) - 1:
-            #         temp += regex[i]
-            #     if stringStack:
-            #         temp = stringStack.pop()
-            #     finalString += temp
-            # elif regex[i] == '*':
-            #     if regex[i - 1] == ')':
-            #         temp = self.star(temp)
-            #     else:
-            #         temp = temp[:-1] + self.star(temp[-1])
-            # else:
-            #     temp += regex[i]
-            #     if stringStack:
-            #         stringStack[-1] = temp
-
-            # Version 2
-            # if regex[i] not in operators:
-            #     if regex[i] == '(':
-            #         stringStack.append(temp)
-            #     elif regex[i] == ')' or i == len(regex) - 1:
-            #         if stringStack:
-            #             temp = stringStack.pop()
-            #         if regex[i] != ')' or i == len(regex) - 1:
-            #             temp += regex[i]
-            #         finalString += temp
-            #     else:
-            #         temp += regex[i]
-            # else:
-            #     print(temp)
-            #     if regex[i] == '*':
-            #         if regex[i - 1] == ')':
-            #             # print(regex[i - 1], temp)
-            #             temp = self.star(temp)
-            #         else:
-            #             temp = temp[:-1] + self.star(temp[-1])
-            #         if i == len(regex) - 1:
-            #             finalString += temp
-
-            # Version 3
-            special = ['(', ')', '+', '*']
-            popped = ''
+            # print(stringStack, temp)
             if regex[i] not in special:
-                temp += regex[i]
+                temp = self.concatenate(temp, regex[i])
             else:
                 if regex[i] == '(':
                     stringStack.append(temp)
+                    temp = ''
                 elif regex[i] == ')':
-                    if stringStack:
-                        popped = stringStack.pop()
-                    finalString += temp
+                    popped = stringStack.pop()
+                    finalString = popped + finalString
                 elif regex[i] == '*':
                     if regex[i - 1] == ')':
-                        popped = self.star(temp)
-                        temp = popped
+                        temp = self.star(temp)
                     else:
                         temp = temp[:-1] + self.star(temp[-1])
                     if i == len(regex) - 1:
-                        finalString += temp
-
+                        finalString = self.concatenate(finalString, temp)
+                elif regex[i] == '+':
+                    # BUGGY
+                    # if not isPlus:
+                    #     str1 = temp
+                    #     temp = '' 
+                    #     isPlus = True
+                    # else:
+                    #     str2 = ''
+                    #     temp = ''
+                    #     isPlus = False
+                    # if i == len(regex) - 1:
+                    #     finalString += self.plus(str1, str2)
+                    pass
         return finalString
 #Driver
 newString = RE()
 # print(newString.main("(aab)*c*"))
-print(newString.main("((aab)*c)*"))
+print(newString.main("aa*(bc)*"))
 # print(regex.star("a"))
 # print(regex.plus("a", "b"))
 # print(regex.concatenate(str(regex.plus("y", "x")), str(regex.star("b"))))
