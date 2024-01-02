@@ -1,3 +1,6 @@
+# Author: G. Bulaong
+# Generate possible string give regex
+
 import random
 
 class RE:
@@ -79,8 +82,9 @@ newString = RE()
 # print(newString.main("a+b"))
 # print(newString.main("(0*1*)*"))
 # print(newString.main("01*+(10)*"))
+print(newString.main("a+b+c+d"))
 
 # HARD
 # print(newString.main("aa*(b+c)*+d"))
 # print(newString.main("((aa*(b+c))*+d)+(x)"))
-print(newString.main("((aa*(b+c))*+d)+(x)+yz*"))
+# print(newString.main("((aa*(b+c))*+d)+(x)+yz*"))
