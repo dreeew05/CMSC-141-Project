@@ -1,5 +1,5 @@
 # Author: G. Bulaong
-# Generate possible string give regex
+# Generate possible string given regex
 
 import random
 
@@ -17,74 +17,35 @@ class RE:
         return str1 if randNum == 0 else str2
     def concatenate(self, str1, str2):
         return str1 + str2
-    def main(self, regex):
-        temp = ''
-        finalString = ''
-        operations = ['(', ')', '*', '+']
-        stringStack = []
-        opStack = []
+    def main(self):
+        # (01)*
+        # string = self.star(self.concatenate('0', '1'))
 
-        for i in range(len(regex)):
-            # print("stack: ", stringStack, "temp: ", temp, "opStack: ", opStack, 'val:', regex[i], 'fString:', finalString)
-            if regex[i] not in operations:
-                temp = self.concatenate(temp, regex[i])
-                # print("stack: ", stringStack, "temp: ", temp, "opStack: ", opStack, 'val:', regex[i], 'fString:', finalString)
-            elif regex[i] == '(':
-                stringStack.append(temp)
-                opStack.append(regex[i])
-                temp = ''
-            elif regex[i] == ')':
-                popped = stringStack.pop()
-                currOp = opStack.pop()
-                if currOp == '(':
-                    temp = self.concatenate(popped, temp)
-                elif currOp == '+':
-                    popped = self.plus(popped, temp)
-                    temp = popped
-                    opStack.pop()
-            elif regex[i] == '*':
-                temp = (
-                    self.star(temp)
-                    if regex[i - 1] == ')'
-                    else temp[:-1] + self.star(temp[-1])
-                )
-                if i == len(regex) - 1 and not opStack:
-                    finalString = self.concatenate(finalString, temp)
-            elif regex[i] == '+':
-                if not opStack and stringStack:
-                    popped = stringStack.pop()
-                    temp = self.concatenate(popped, temp)
-                opStack.append(regex[i])
-                stringStack.append(temp)
-                temp = ''
+        # (10)*
+        # string = self.star(self.concatenate('1','0'))
 
-            if i == len(regex) - 1:
-                if len(stringStack) == 1 and stringStack[0] == '':
-                    finalString = temp
-                else:
-                    while stringStack:
-                        popped = stringStack.pop()
-                        if opStack:
-                            currOp = opStack.pop()
-                            if currOp == '+':
-                                popped = self.plus(popped, temp)
-                                # print("--FINAL--")
-                                # print("stack:", stringStack, "opStack:", opStack, "temp:", temp, "popped:", popped)
-                                temp = popped   
-                        finalString = temp
-        return finalString
+        # 0(10)*
+        # string = self.concatenate('0', self.star(self.concatenate('1', '0')))
+
+        # (10)*1
+        # string = self.concatenate(self.star(self.concatenate('1', '0')), '1')
+
+        # 01*+1 => (0(1*)) + 1
+        # string = self.plus(
+        #     self.concatenate('0', self.star('1')),
+        #     '1'
+        # )
+
+        # aa*(b+c)*+d
+        string = self.plus(
+            self.concatenate(
+                self.concatenate('a', self.star('a')),
+                self.star(self.plus('b', 'c'))
+            ),
+            'd'
+        )
+        return string
 #Driver
 newString = RE()
-# EASY
-# print(newString.main("(aab)*c*"))
-# print(newString.main("a+(bc)*"))
-# print(newString.main("(a+b)"))                  
-# print(newString.main("a+b"))
-# print(newString.main("(0*1*)*"))
-# print(newString.main("01*+(10)*"))
-print(newString.main("a+b+c+d"))
+print(newString.main())
 
-# HARD
-# print(newString.main("aa*(b+c)*+d"))
-# print(newString.main("((aa*(b+c))*+d)+(x)"))
-# print(newString.main("((aa*(b+c))*+d)+(x)+yz*"))
